@@ -1,32 +1,39 @@
 from . import tags
+from . import util
+import uuid
 
 
 class BootstrapComponent(tags.html_tag):
+    cls = None
+
     def __init__(self, *args, **kwargs):
-        bs_class = type(self).__name__.replace("_", "-").lower()
-        user_classes = kwargs.pop("_class", "") + " " + kwargs.pop("cls", "")
-        all_classes = " ".join(filter(None, [bs_class, user_classes.strip()]))
+        if self.cls:
+            bs_class = self.cls
+        else:
+            bs_class = type(self).__name__.replace("_", "-").lower()
+        all_classes = self._all_classes(bs_class, kwargs)
 
         super().__init__(*args, **kwargs, _class=all_classes)
 
+    def _all_classes(self, bs_class, kwargs):
+        user_classes = kwargs.pop("_class", "") + " " + kwargs.pop("cls", "")
+        all_classes = " ".join(filter(None, [bs_class, user_classes.strip()]))
 
-class navbar(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="nav",
-        )
+        return all_classes
+
+    def _btn_classes(self, bs_class, kwargs):
+        user_classes = kwargs.pop("_class", "") + " " + kwargs.pop("btn_cls", "")
+        btn_classes = " ".join(filter(None, [bs_class, user_classes.strip()]))
+
+        return btn_classes
+
+
+# class navbar(BootstrapComponent):
+#     tagname = "nav"
 
 
 class navbar_brand(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="a",
-            href="#",
-        )
+    tagname = "a"
 
 
 class btn(BootstrapComponent):
@@ -44,145 +51,225 @@ class btn(BootstrapComponent):
         )
 
 
-class navbar_toggler(btn):
-    def __init__(self, *args, **kwargs):
-        # kwargs["type"] = "button"
-        super().__init__(*args, **kwargs, type="submit")
+# class navbar_toggler(btn):
+#     def __init__(self, *args, **kwargs):
+#         # kwargs["type"] = "button"
+#         super().__init__(*args, **kwargs, type="submit")
 
 
 class navbar_collapse(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
-
-
-class navbar_nav(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="ul",
-        )
+    tagname = "div"
 
 
 class nav_item(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="li",
-        )
+    tagname = "li"
 
 
-class nav_link(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="a",
-            aria_current="page",
-            href="#",
-        )
-
-
-class dropdown_menu(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="ul",
-        )
-
-
-class dropdown_item(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="a",
-            href="#",
-        )
+# class nav_link(BootstrapComponent):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(
+#             *args,
+#             **kwargs,
+#             tagname="a",
+#             aria_current="page",
+#             href="#",
+#         )
 
 
 class row(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class col(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class container(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class btn_group(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class collapse(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class form_control(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="input",
-        )
+    tagname = "input"
 
 
 class card(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class card_body(BootstrapComponent):
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
-        )
+    tagname = "div"
 
 
 class bold(BootstrapComponent):
+    tagname = "div"
+
+
+class BootstrapComponentWithId(BootstrapComponent):
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            *args,
-            **kwargs,
-            tagname="div",
+        id = kwargs.get("id", None)
+        if id is None:
+            kwargs["id"] = str(uuid.uuid4())
+        super().__init__(*args, **kwargs)
+
+
+class accordion(BootstrapComponentWithId):
+    tagname = "div"
+
+
+class accordion_header(BootstrapComponent):
+    tagname = "h2"
+
+
+class accordion_button(BootstrapComponent):
+    tagname = "button"
+
+    def __init__(self, *args, **kwargs):
+        accordion_id = kwargs.pop("data_bs_target", None)
+        if accordion_id is not None:
+            kwargs["data_bs_target"] = "#" + accordion_id
+            kwargs["aria_controls"] = accordion_id
+
+        kwargs.setdefault("aria_expanded", "false")
+        kwargs.setdefault("data_bs_toggle", "collapse")
+        kwargs.setdefault("cls", "collapsed")
+
+        super().__init__(*args, **kwargs)
+
+
+class accordion_collapse(BootstrapComponentWithId):
+    tagname = "div"
+
+    def __init__(self, *args, **kwargs):
+        accordion_parent_id = kwargs.pop("data_bs_parent", None)
+        if accordion_parent_id is not None:
+            kwargs["data_bs_parent"] = "#" + accordion_parent_id
+        super().__init__(*args, **kwargs, _class="collapse")
+
+
+class accordion_body(BootstrapComponent):
+    tagname = "div"
+
+
+class accordion_item(BootstrapComponent):
+    tagname = "div"
+
+    def __init__(self, header, body, parent, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        id_ = str(uuid.uuid4())
+
+        with accordion_header() as hdr:
+            with accordion_button(data_bs_target=id_) as btn:
+                btn.add(header)
+            hdr.add(btn)
+
+        with accordion_collapse(id=id_, data_bs_parent=parent.id) as clp:
+            with accordion_body() as bd:
+                bd.add(body)
+            clp.add(bd)
+
+        self.add(hdr, clp)
+
+
+class dropdown_menu(BootstrapComponent):
+    tagname = "ul"
+
+    def add(self, *args):
+        for item in args:
+            li = tags.li(args)
+            super(dropdown_menu, self).add(li)
+
+
+class dropdown_item(BootstrapComponent):
+    tagname = "a"
+
+
+class dropdown(BootstrapComponent):
+    tagname = "div"
+    cls = "dropdown"
+
+    def __init__(self, *args, **kwargs):
+        self.tagname = kwargs.pop("tagname", self.tagname)
+        super().__init__(*args, **kwargs)
+        self.menu = dropdown_menu()
+
+        super(dropdown, self).add(self.toggle)
+        super(dropdown, self).add(self.menu)
+
+    def add(self, *args):
+        self.menu.add(*args)
+
+
+class dropdown_button(dropdown):
+    def __init__(self, title, *args, **kwargs):
+        bs_class = "btn dropdown-toggle"
+        btn_classes = self._btn_classes(bs_class, kwargs)
+
+        self.toggle = tags.button(
+            title,
+            cls=btn_classes,
+            data_bs_toggle="dropdown",
+            aria_expanded="false",
+            type="button",
         )
+        super().__init__(*args, **kwargs)
+
+
+class dropdown_link(dropdown):
+    def __init__(self, link_title, href="#", *args, **kwargs):
+        bs_class = "btn dropdown-toggle"
+        btn_classes = self._btn_classes(bs_class, kwargs)
+
+        self.toggle = tags.a(
+            link_title,
+            href=href,
+            cls=btn_classes,
+            role="button",
+            data_bs_toggle="dropdown",
+            aria_expanded="false",
+        )
+        super().__init__(*args, **kwargs)
+
+
+class navbar_nav(BootstrapComponent):
+    tagname = "ul"
+
+
+class container_fluid(BootstrapComponent):
+    tagname = "div"
+
+
+class navbar(BootstrapComponent):
+    tagname = "nav"
+    cls = "navbar"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # self.container = super(navbar, self).add(container_fluid())
+        self.container = super(navbar, self).add(container_fluid())
+
+        with self.container:
+            self.brand = util.container()
+            tags.button(
+                tags.span(
+                    cls="navbar-toggler-icon",
+                ),
+                cls="navbar-toggler",
+                type="button",
+                data_bs_toggle="collapse",
+                data_bs_target="#navbarNavDropdown",
+            )
+            self.navbar = tags.div(
+                cls="collapse navbar-collapse",
+                id="navbarNavDropdown",
+            )
+
+    def add(self, *args):
+        return self.navbar.add(*args)
