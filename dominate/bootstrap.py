@@ -28,10 +28,6 @@ class BootstrapComponent(tags.html_tag):
         return btn_classes
 
 
-# class navbar(BootstrapComponent):
-#     tagname = "nav"
-
-
 class navbar_brand(BootstrapComponent):
     tagname = "a"
 
@@ -51,29 +47,12 @@ class btn(BootstrapComponent):
         )
 
 
-# class navbar_toggler(btn):
-#     def __init__(self, *args, **kwargs):
-#         # kwargs["type"] = "button"
-#         super().__init__(*args, **kwargs, type="submit")
-
-
 class navbar_collapse(BootstrapComponent):
     tagname = "div"
 
 
 class nav_item(BootstrapComponent):
     tagname = "li"
-
-
-# class nav_link(BootstrapComponent):
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(
-#             *args,
-#             **kwargs,
-#             tagname="a",
-#             aria_current="page",
-#             href="#",
-#         )
 
 
 class row(BootstrapComponent):
@@ -273,3 +252,56 @@ class navbar(BootstrapComponent):
 
     def add(self, *args):
         return self.navbar.add(*args)
+
+
+class tabs(tags.html_tag):
+    tagname = "div"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.nav_tabs = self.add(
+            tags.ul(
+                cls="nav nav-tabs",
+                role="tablist",
+            )
+        )
+        self.tab_content = self.add(
+            tags.div(
+                cls="tab-content",
+            ),
+        )
+
+
+class tabpanel(BootstrapComponent):
+    tagname = "div"
+    cls = "tab-pane fade"
+
+    def __init__(self, title, parent, *args, active=False, **kwargs):
+        self.id = str(uuid.uuid4())
+        self.cls += " show active" if active else ""
+        super().__init__(
+            *args,
+            role="tabpanel",
+            id=f"{self.id}-pane",
+            **kwargs,
+        )
+
+        with parent.nav_tabs:
+            with tags.li(
+                _class="nav-item",
+                role="presentation",
+            ):
+                tags.button(
+                    title,
+                    _class="nav-link" + (" active" if active else ""),
+                    id=f"{self.id}-tab",
+                    data_bs_toggle="tab",
+                    data_bs_target=f"#{self.id}-pane",
+                    role="tab",
+                    aria_controls=self.id,
+                )
+
+        parent.tab_content.add(self)
+        # if active:
+        #    self.add_class("show active")

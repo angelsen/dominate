@@ -101,6 +101,11 @@ class block(controlTag):
     pass
 
 
+class crispy(controlTag):
+    is_single = True
+    pass
+
+
 def v(s):
     v = "{{ %s }}" % s
     return v
